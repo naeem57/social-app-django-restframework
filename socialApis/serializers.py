@@ -11,8 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    followers_count = serializers.IntegerField(
-        source="followers.count", read_only=True)
+    followers_count = serializers.IntegerField(source="followers.count", read_only=True)
 
     class Meta:
         model = Profile
@@ -29,8 +28,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
-    likes_count = serializers.IntegerField(
-        source="likes.count", read_only=True)
+    likes_count = serializers.IntegerField(source="likes.count", read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:

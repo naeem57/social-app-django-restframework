@@ -28,15 +28,13 @@ class ProfileView(APIView):
         serializer = ProfileSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
-            return Response(
-                {"msg": "Profile created", "data": serializer.data})
+            return Response({"msg": "Profile created", "data": serializer.data})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk=None):
         # Update only the user's own profile
         profile = get_object_or_404(Profile, user=request.user)
-        serializer = ProfileSerializer(
-            profile, data=request.data, partial=True)
+        serializer = ProfileSerializer(profile, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(
@@ -97,8 +95,7 @@ class PostDetailView(APIView):
     def put(self, request, pk):
         post = get_object_or_404(Post, pk=pk)
         if post.author != request.user:
-            return Response(
-                {"error": "You can only edit your own post"}, status=403)
+            return Response({"error": "You can only edit your own post"}, status=403)
         serializer = PostSerializer(post, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -108,8 +105,7 @@ class PostDetailView(APIView):
     def delete(self, request, pk):
         post = get_object_or_404(Post, pk=pk)
         if post.author != request.user:
-            return Response(
-                {"error": "You can only delete your own post"}, status=403)
+            return Response({"error": "You can only delete your own post"}, status=403)
         post.delete()
         return Response({"msg": "Post deleted"})
 
@@ -120,8 +116,7 @@ class LikeUnlikeView(APIView):
 
     def post(self, request, pk):
         post = get_object_or_404(Post, pk=pk)
-        like, created = Like.objects.get_or_create(
-            user=request.user, post=post)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
         if not created:
             like.delete()
             return Response({"message": "Unliked"})
@@ -142,8 +137,7 @@ class CommentView(APIView):
         text = request.data.get("text")
         if not text:
             return Response({"error": "Text is required"}, status=400)
-        comment = Comment.objects.create(
-            user=request.user, post=post, text=text)
+        comment = Comment.objects.create(user=request.user, post=post, text=text)
         Notification.objects.create(
             sender=request.user,
             receiver=post.author,
@@ -164,14 +158,11 @@ class CommentDetailView(APIView):
     def put(self, request, pk):
         comment = get_object_or_404(Comment, pk=pk)
         if comment.user != request.user:
-            return Response(
-                {"error": "You can only edit your own comment"}, status=403)
-        serializer = CommentSerializer(
-            comment, data=request.data, partial=True)
+            return Response({"error": "You can only edit your own comment"}, status=403)
+        serializer = CommentSerializer(comment, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(
-                {"msg": "Comment updated", "data": serializer.data})
+            return Response({"msg": "Comment updated", "data": serializer.data})
         return Response(serializer.errors, status=400)
 
     def delete(self, request, pk):
@@ -190,7 +181,6 @@ class FeedView(APIView):
 
     def get(self, request):
         following = request.user.following.all()
-        posts = Post.objects.filter(
-            author__in=following).order_by("-created_at")
+        posts = Post.objects.filter(author__in=following).order_by("-created_at")
         serializer = PostSerializer(posts, many=True)
         return Response({"data": serializer.data})
