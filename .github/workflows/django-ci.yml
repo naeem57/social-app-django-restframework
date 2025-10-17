@@ -26,9 +26,13 @@ jobs:
           --health-retries=5
 
     env:
-      DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
+      DATABASE_NAME: test_db
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
       DJANGO_SECRET_KEY: secret_ci_key
-      DEBUG: 0
+      DEBUG: "0"
 
     steps:
       - name: Checkout repository
